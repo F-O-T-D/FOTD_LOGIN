@@ -13,6 +13,7 @@ export const InputTypes = {
   EMAIL: 'EMAIL',
   PASSWORD: 'PASSWORD',
   PASSWORD_CONFIRM: 'PASSWORD_CONFIRM',
+  NAME: 'NAME',
 };
 
 const PasswordProps = {
@@ -38,6 +39,13 @@ const InputTypeProps = {
     title: 'PASSWORD CONFIRM',
     placeholder: 'PASSWORD CONFIRM',
     ...PasswordProps,
+  },
+  NAME: {
+    title: 'NAME',
+    placeholder: 'YOUR NAME',
+    keyboardType: 'default',
+    secureTextEntry: false,
+    iconName: { active: 'account', inactive: 'account-outline' },
   },
 };
 

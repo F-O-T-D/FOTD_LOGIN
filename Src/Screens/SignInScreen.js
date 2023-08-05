@@ -1,5 +1,12 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StyleSheet, View, Keyboard, Image, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Keyboard,
+  Image,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { AuthRoutes } from '../Navigations/Routes';
 import Input, { InputTypes, ReturnKeyTypes } from '../Components/Input';
 import { useRef, useReducer, useCallback } from 'react';
@@ -15,6 +22,8 @@ import {
   AuthFormTypes,
   initAuthForm,
 } from '../Reducers/authFormReducer';
+import axios from 'axios';
+import { useUserState } from '../Contexts/UserContext';
 
 const SignInScreen = () => {
   const navigation = useNavigation();
@@ -24,6 +33,7 @@ const SignInScreen = () => {
 
   const [form, dispatch] = useReducer(authFormReducer, initAuthForm);
 
+  const [, setUser] = useUserState();
   useFocusEffect(
     useCallback(() => {
       return () => dispatch({ type: AuthFormTypes.RESET });
@@ -40,11 +50,28 @@ const SignInScreen = () => {
     });
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     Keyboard.dismiss();
     if (!form.disabled && !form.isLoading) {
       dispatch({ type: AuthFormTypes.TOGGLE_LOADING });
-      console.log(form.email, form.password);
+
+      try {
+        const response = await axios.post(
+          'http://localhost:3000/api/user_table/login',
+          {
+            user_email: form.email,
+            user_password: form.password,
+          }
+        );
+
+        if (response.data.success) {
+          setUser(response.data.user);
+        } else {
+          Alert.alert('로그인 실패', response.data.err);
+        }
+      } catch (error) {
+        Alert.alert('로그인 오류');
+      }
       dispatch({ type: AuthFormTypes.TOGGLE_LOADING });
     }
   };
